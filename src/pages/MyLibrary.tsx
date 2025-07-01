@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { ArrowLeft, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +18,7 @@ interface SurveyItem {
 }
 
 const MyLibrary = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('ongoing');
 
   // 샘플 데이터

@@ -1,7 +1,6 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Plus } from 'lucide-react';
+import { Bell, Plus, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SurveyCard from '@/components/SurveyCard';
 import BottomNavigation from '@/components/BottomNavigation';
