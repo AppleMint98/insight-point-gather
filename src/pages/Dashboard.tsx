@@ -1,4 +1,3 @@
-
 import { ArrowLeft, Plus, BarChart3, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -75,6 +74,14 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Back Button - Fixed Position */}
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed bottom-6 left-4 w-12 h-12 bg-white shadow-lg border border-gray-200 rounded-full flex items-center justify-center hover:shadow-xl transition-all duration-200 z-40"
+      >
+        <ArrowLeft className="w-5 h-5 text-gray-700" />
+      </button>
     </div>
   );
 };

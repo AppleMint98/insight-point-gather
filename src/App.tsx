@@ -11,6 +11,7 @@ import SurveyDetail from "./pages/SurveyDetail";
 import MyLibrary from "./pages/MyLibrary";
 import Dashboard from "./pages/Dashboard";
 import CreateSurvey from "./pages/CreateSurvey";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/library" element={<MyLibrary />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create" element={<CreateSurvey />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

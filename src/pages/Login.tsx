@@ -1,15 +1,17 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,6 +123,14 @@ const Login = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Back Button - Fixed Position */}
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed bottom-6 left-4 w-12 h-12 bg-white shadow-lg border border-gray-200 rounded-full flex items-center justify-center hover:shadow-xl transition-all duration-200 z-40"
+      >
+        <ArrowLeft className="w-5 h-5 text-gray-700" />
+      </button>
     </div>
   );
 };
