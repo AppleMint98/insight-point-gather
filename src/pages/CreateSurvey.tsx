@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 const CreateSurvey = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [selectedTemplate, setSelectedTemplate] = useState('');
   const [surveyData, setSurveyData] = useState({
     title: '',
     description: '',
@@ -21,11 +22,67 @@ const CreateSurvey = () => {
     isAnonymous: true,
     reward: '',
     estimatedTime: '',
+    deadline: '',
+    autoReminder: false,
     questions: [{ id: 1, question: '', type: 'text' }]
   });
 
+  // 템플릿 데이터
+  const templates = [
+    {
+      id: 'job_satisfaction',
+      name: '직무 만족도 조사',
+      description: '직원들의 업무 만족도를 측정하는 표준 템플릿',
+      estimatedTime: '약 8분',
+      questions: 12
+    },
+    {
+      id: 'welfare_survey',
+      name: '복지제도 선호도 조사',
+      description: '직원 복지 개선을 위한 의견 수렴 템플릿',
+      estimatedTime: '약 6분',
+      questions: 8
+    },
+    {
+      id: 'custom',
+      name: '새로 만들기',
+      description: '처음부터 직접 설문을 제작합니다',
+      estimatedTime: '사용자 설정',
+      questions: 0
+    }
+  ];
+
+  const loadTemplate = (templateId: string) => {
+    setSelectedTemplate(templateId);
+    if (templateId === 'job_satisfaction') {
+      setSurveyData({
+        ...surveyData,
+        title: '3분기 직무 만족도 조사',
+        description: '직원들의 현재 업무 만족도와 개선 사항을 파악하기 위한 설문조사입니다.',
+        estimatedTime: '약 8분',
+        questions: [
+          { id: 1, question: '현재 업무에 대한 전반적인 만족도는 어떠신가요?', type: 'scale' },
+          { id: 2, question: '업무량은 적절하다고 생각하시나요?', type: 'radio' },
+          // ... 더 많은 질문들
+        ]
+      });
+    } else if (templateId === 'welfare_survey') {
+      setSurveyData({
+        ...surveyData,
+        title: '신규 복지제도 선호도 조사',
+        description: '새로운 복지제도 도입을 위한 직원 의견 수렴 설문조사입니다.',
+        estimatedTime: '약 6분',
+        questions: [
+          { id: 1, question: '가장 필요하다고 생각하는 복지제도는 무엇인가요?', type: 'checkbox' },
+          { id: 2, question: '현재 복지제도에 대한 만족도를 평가해주세요.', type: 'scale' },
+          // ... 더 많은 질문들
+        ]
+      });
+    }
+  };
+
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -66,10 +123,53 @@ const CreateSurvey = () => {
 
   const handleSubmit = () => {
     console.log('Creating survey:', surveyData);
+    // 원클릭 배포 시뮬레이션
     navigate('/dashboard');
   };
 
+  // 템플릿 선택 단계
   const renderStep1 = () => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>템플릿 선택</CardTitle>
+          <p className="text-sm text-gray-600">기존 템플릿을 사용하면 빠르게 설문을 만들 수 있습니다.</p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {templates.map((template) => (
+            <div
+              key={template.id}
+              className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                selectedTemplate === template.id 
+                  ? 'border-primary bg-primary-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+              onClick={() => loadTemplate(template.id)}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="font-medium text-gray-900">{template.name}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{template.description}</p>
+                  <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                    <span>{template.estimatedTime}</span>
+                    {template.questions > 0 && <span>{template.questions}개 문항</span>}
+                  </div>
+                </div>
+                {selectedTemplate === template.id && (
+                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  // 기본 정보 단계
+  const renderStep2 = () => (
     <div className="space-y-6">
       <Card>
         <CardHeader>
@@ -110,16 +210,29 @@ const CreateSurvey = () => {
               placeholder="예: 약 5분"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              마감일 *
+            </label>
+            <Input
+              type="date"
+              value={surveyData.deadline}
+              onChange={(e) => setSurveyData({...surveyData, deadline: e.target.value})}
+              required
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 
-  const renderStep2 = () => (
+  // 그룹 및 설정 단계
+  const renderStep3 = () => (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>대상 및 설정</CardTitle>
+          <CardTitle>그룹 및 설정</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -166,6 +279,17 @@ const CreateSurvey = () => {
             />
           </div>
 
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="text-sm font-medium text-gray-700">자동 리마인더</label>
+              <p className="text-xs text-gray-500">마감일 전에 자동으로 알림을 보냅니다</p>
+            </div>
+            <Switch
+              checked={surveyData.autoReminder}
+              onCheckedChange={(checked) => setSurveyData({...surveyData, autoReminder: checked})}
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               보상
@@ -181,7 +305,8 @@ const CreateSurvey = () => {
     </div>
   );
 
-  const renderStep3 = () => (
+  // 질문 작성 단계
+  const renderStep4 = () => (
     <div className="space-y-6">
       <Card>
         <CardHeader>
@@ -226,7 +351,7 @@ const CreateSurvey = () => {
                   <SelectItem value="textarea">장문형</SelectItem>
                   <SelectItem value="radio">객관식 (단일선택)</SelectItem>
                   <SelectItem value="checkbox">객관식 (복수선택)</SelectItem>
-                  <SelectItem value="scale">척도형</SelectItem>
+                  <SelectItem value="scale">척도형 (1-5점)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -255,7 +380,7 @@ const CreateSurvey = () => {
       <div className="bg-white border-b">
         <div className="px-4 py-3">
           <div className="flex items-center space-x-2">
-            {[1, 2, 3].map((step) => (
+            {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                   step <= currentStep 
@@ -264,7 +389,7 @@ const CreateSurvey = () => {
                 }`}>
                   {step}
                 </div>
-                {step < 3 && (
+                {step < 4 && (
                   <div className={`w-8 h-0.5 mx-2 ${
                     step < currentStep ? 'bg-primary' : 'bg-gray-200'
                   }`} />
@@ -274,8 +399,9 @@ const CreateSurvey = () => {
           </div>
           <div className="mt-2 text-sm text-gray-600">
             단계 {currentStep}: {
-              currentStep === 1 ? '기본 정보' :
-              currentStep === 2 ? '대상 및 설정' : '질문 작성'
+              currentStep === 1 ? '템플릿 선택' :
+              currentStep === 2 ? '기본 정보' : 
+              currentStep === 3 ? '그룹 및 설정' : '질문 작성'
             }
           </div>
         </div>
@@ -285,6 +411,7 @@ const CreateSurvey = () => {
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
         {currentStep === 3 && renderStep3()}
+        {currentStep === 4 && renderStep4()}
       </div>
 
       {/* Fixed Bottom Buttons */}
@@ -299,10 +426,11 @@ const CreateSurvey = () => {
               이전
             </Button>
           )}
-          {currentStep < 3 ? (
+          {currentStep < 4 ? (
             <Button 
               onClick={handleNext}
               className="flex-1 bg-primary hover:bg-primary-600"
+              disabled={currentStep === 1 && !selectedTemplate}
             >
               다음
             </Button>
@@ -311,7 +439,7 @@ const CreateSurvey = () => {
               onClick={handleSubmit}
               className="flex-1 bg-accent hover:bg-accent-600"
             >
-              설문 게시하기
+              원클릭 게시하기
             </Button>
           )}
         </div>

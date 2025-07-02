@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { ArrowLeft, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock, AlertTriangle, CheckCircle, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,25 +15,28 @@ interface SurveyItem {
   daysLeft: number;
   completedAt?: string;
   reward?: string;
+  isNew?: boolean; // 새로 도착한 설문 표시
 }
 
 const MyLibrary = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('ongoing');
 
-  // 샘플 데이터
+  // 샘플 데이터 - 새로 도착한 설문 포함
   const ongoingSurveys: SurveyItem[] = [
     {
       id: '1',
       title: '3분기 직무 만족도 조사',
       type: 'required',
-      daysLeft: 1
+      daysLeft: 1,
+      isNew: true // 새로 도착한 필수 설문
     },
     {
       id: '2', 
       title: '신규 복지제도 선호도 조사',
       type: 'optional',
-      daysLeft: 3
+      daysLeft: 3,
+      isNew: true // 새로 도착한 선택 설문
     },
     {
       id: '3',
@@ -64,17 +67,25 @@ const MyLibrary = () => {
 
   const handleSurveyClick = (surveyId: string) => {
     console.log(`Opening survey ${surveyId}`);
+    // 실제로는 설문 응답 페이지로 이동
   };
 
   const SurveyItemCard = ({ survey, isCompleted = false }: { survey: SurveyItem; isCompleted?: boolean }) => (
     <Card 
-      className="cursor-pointer hover:shadow-md transition-shadow"
+      className={`cursor-pointer hover:shadow-md transition-shadow ${
+        survey.isNew ? 'ring-2 ring-accent-200 bg-accent-50' : ''
+      }`}
       onClick={() => handleSurveyClick(survey.id)}
     >
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
+              {survey.isNew && (
+                <Badge className="bg-accent text-white text-xs px-2 py-1">
+                  NEW
+                </Badge>
+              )}
               <Badge 
                 variant={survey.type === 'required' ? 'destructive' : 'secondary'}
                 className={`text-xs ${
@@ -105,11 +116,18 @@ const MyLibrary = () => {
                 )}
               </div>
             ) : (
-              <div className="flex items-center space-x-1 text-sm text-gray-600">
-                <Clock className="w-4 h-4" />
-                <span className={survey.daysLeft <= 1 ? 'text-red-600 font-medium' : ''}>
-                  {survey.daysLeft}일 남음
-                </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-1 text-sm text-gray-600">
+                  <Clock className="w-4 h-4" />
+                  <span className={survey.daysLeft <= 1 ? 'text-red-600 font-medium' : ''}>
+                    {survey.daysLeft}일 남음
+                  </span>
+                </div>
+                {survey.isNew && (
+                  <span className="text-xs text-accent font-medium">
+                    새로 도착한 설문
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -118,12 +136,22 @@ const MyLibrary = () => {
     </Card>
   );
 
+  // 새로 도착한 설문 개수
+  const newSurveyCount = ongoingSurveys.filter(s => s.isNew).length;
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="flex items-center px-4 py-4">
+        <div className="flex items-center justify-between px-4 py-4">
           <h1 className="text-xl font-bold text-gray-900">내 보관함</h1>
+          {/* 알림 표시 */}
+          {newSurveyCount > 0 && (
+            <div className="flex items-center space-x-1 text-accent">
+              <Bell className="w-5 h-5" />
+              <span className="text-sm font-medium">{newSurveyCount}개 새 설문</span>
+            </div>
+          )}
         </div>
       </header>
 
@@ -135,6 +163,11 @@ const MyLibrary = () => {
               {ongoingSurveys.filter(s => s.type === 'required').length > 0 && (
                 <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
               )}
+              {newSurveyCount > 0 && (
+                <Badge className="ml-2 bg-accent text-white text-xs px-1 py-0.5 h-5">
+                  {newSurveyCount}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="completed">완료</TabsTrigger>
           </TabsList>
@@ -142,16 +175,23 @@ const MyLibrary = () => {
           <TabsContent value="ongoing" className="space-y-4">
             {ongoingSurveys.length > 0 ? (
               <>
-                {/* 필수 설문 먼저 표시 */}
+                {/* 새로 도착한 설문을 먼저 표시 */}
                 {ongoingSurveys
-                  .filter(survey => survey.type === 'required')
+                  .filter(survey => survey.isNew)
                   .map(survey => (
                     <SurveyItemCard key={survey.id} survey={survey} />
                   ))}
                 
-                {/* 선택 설문 표시 */}
+                {/* 필수 설문 (새 설문 제외) */}
                 {ongoingSurveys
-                  .filter(survey => survey.type === 'optional')
+                  .filter(survey => survey.type === 'required' && !survey.isNew)
+                  .map(survey => (
+                    <SurveyItemCard key={survey.id} survey={survey} />
+                  ))}
+                
+                {/* 선택 설문 (새 설문 제외) */}
+                {ongoingSurveys
+                  .filter(survey => survey.type === 'optional' && !survey.isNew)
                   .map(survey => (
                     <SurveyItemCard key={survey.id} survey={survey} />
                   ))}
@@ -161,7 +201,10 @@ const MyLibrary = () => {
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Clock className="w-8 h-8 text-gray-400" />
                 </div>
-                <p className="text-gray-500">진행 중인 설문이 없습니다.</p>
+                <p className="text-gray-500">
+                  진행 중인 설문이 없습니다.<br />
+                  <span className="text-sm text-gray-400">새로운 설문이 도착하면 자동으로 여기에 정리됩니다.</span>
+                </p>
               </div>
             )}
           </TabsContent>
