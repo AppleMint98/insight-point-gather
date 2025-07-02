@@ -1,3 +1,4 @@
+
 import { ArrowLeft, User, Mail, Building, Gift, Settings, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,14 +17,13 @@ const Profile = () => {
     group: 'AA회사',
     joinDate: '2024년 1월',
     totalSurveys: 12,
-    totalRewards: '15,000P',
+    totalRewards: 3,
     completionRate: 85
   };
 
   const myRewards = [
     { id: '1', name: '스타벅스 아메리카노', status: '사용 가능', date: '2024-06-28' },
-    { id: '2', name: '1,000P', status: '적립 완료', date: '2024-06-25' },
-    { id: '3', name: '치킨 기프티콘', status: '사용 완료', date: '2024-06-20' }
+    { id: '2', name: '치킨 기프티콘', status: '사용 완료', date: '2024-06-20' }
   ];
 
   const handleViewAllRewards = () => {
@@ -83,7 +83,7 @@ const Profile = () => {
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">{userInfo.totalRewards}</p>
-                <p className="text-sm text-gray-600">누적 보상</p>
+                <p className="text-sm text-gray-600">받은 보상</p>
               </div>
             </div>
           </CardContent>
@@ -109,12 +109,10 @@ const Profile = () => {
                 </div>
                 <Badge 
                   variant={
-                    reward.status === '사용 가능' ? 'default' : 
-                    reward.status === '적립 완료' ? 'secondary' : 'outline'
+                    reward.status === '사용 가능' ? 'default' : 'outline'
                   }
                   className={
                     reward.status === '사용 가능' ? 'bg-green-100 text-green-700' :
-                    reward.status === '적립 완료' ? 'bg-blue-100 text-blue-700' :
                     'bg-gray-100 text-gray-600'
                   }
                 >
