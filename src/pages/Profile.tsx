@@ -1,4 +1,3 @@
-
 import { ArrowLeft, User, Mail, Building, Gift, Settings, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -26,6 +25,10 @@ const Profile = () => {
     { id: '2', name: '1,000P', status: '적립 완료', date: '2024-06-25' },
     { id: '3', name: '치킨 기프티콘', status: '사용 완료', date: '2024-06-20' }
   ];
+
+  const handleViewAllRewards = () => {
+    navigate('/profile/rewards');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -91,7 +94,7 @@ const Profile = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>내 보상</CardTitle>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleViewAllRewards}>
                 <Gift className="w-4 h-4 mr-2" />
                 전체 보기
               </Button>

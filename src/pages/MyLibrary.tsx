@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ArrowLeft, Clock, AlertTriangle, CheckCircle, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -66,8 +65,7 @@ const MyLibrary = () => {
   ];
 
   const handleSurveyClick = (surveyId: string) => {
-    console.log(`Opening survey ${surveyId}`);
-    // 실제로는 설문 응답 페이지로 이동
+    navigate(`/survey/${surveyId}/response`);
   };
 
   const SurveyItemCard = ({ survey, isCompleted = false }: { survey: SurveyItem; isCompleted?: boolean }) => (

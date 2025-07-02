@@ -1,4 +1,3 @@
-
 import { ArrowLeft, Plus, BarChart3, Users, Download, Bell, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -41,8 +40,7 @@ const Dashboard = () => {
   };
 
   const handleViewNonResponders = (surveyId: string) => {
-    console.log(`Viewing non-responders for survey ${surveyId}`);
-    // 미응답자 현황 페이지로 이동
+    navigate(`/dashboard/non-responders/${surveyId}`);
   };
 
   const handleAutoReminder = (surveyId: string) => {
