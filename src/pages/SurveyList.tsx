@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Plus, ArrowLeft } from 'lucide-react';
@@ -80,8 +81,8 @@ const SurveyList = () => {
       <div className="mx-4 mt-4 p-4 bg-gradient-to-r from-accent-500 to-accent-400 rounded-xl text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-bold text-lg">참여하면 포인트를 드려요!</h2>
-            <p className="text-sm opacity-90 mt-1">지금 설문에 참여하고 다양한 보상을 받아보세요</p>
+            <h2 className="font-bold text-lg">참여하면 다양한 경품을 얻을 수 있어요!</h2>
+            <p className="text-sm opacity-90 mt-1">지금 설문에 참여하고 다양한 기프티콘을 받아보세요</p>
           </div>
           <div className="text-3xl">🎁</div>
         </div>
