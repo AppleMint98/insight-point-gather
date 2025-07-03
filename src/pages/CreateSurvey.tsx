@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ArrowLeft, Plus, Trash2, Copy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -82,14 +81,18 @@ const CreateSurvey = () => {
   };
 
   const handleNext = () => {
+    console.log('Next button clicked, current step:', currentStep);
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
+      console.log('Moving to step:', currentStep + 1);
     }
   };
 
   const handlePrev = () => {
+    console.log('Prev button clicked, current step:', currentStep);
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
+      console.log('Moving to step:', currentStep - 1);
     }
   };
 
@@ -239,18 +242,18 @@ const CreateSurvey = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               대상 그룹 (선택사항)
             </label>
-            <Select value={surveyData.targetGroup} onValueChange={(value) => setSurveyData({...surveyData, targetGroup: value})}>
+            <Select value={surveyData.targetGroup || undefined} onValueChange={(value) => setSurveyData({...surveyData, targetGroup: value || ''})}>
               <SelectTrigger>
                 <SelectValue placeholder="그룹을 선택하세요" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">전체 공개</SelectItem>
+                <SelectItem value="all">전체 공개</SelectItem>
                 <SelectItem value="AA회사">AA회사</SelectItem>
                 <SelectItem value="BB대학교">BB대학교</SelectItem>
                 <SelectItem value="CC연구소">CC연구소</SelectItem>
               </SelectContent>
             </Select>
-            {surveyData.targetGroup && (
+            {surveyData.targetGroup && surveyData.targetGroup !== 'all' && (
               <Badge variant="secondary" className="mt-2">
                 대상: {surveyData.targetGroup}
               </Badge>
