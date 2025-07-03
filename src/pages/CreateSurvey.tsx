@@ -23,6 +23,8 @@ const CreateSurvey = () => {
     estimatedTime: '',
     deadline: '',
     autoReminder: false,
+    enableTimeValidation: true,
+    minResponseTime: 10,
     questions: [{ id: 1, question: '', type: 'text' }]
   });
 
@@ -284,6 +286,36 @@ const CreateSurvey = () => {
 
           <div className="flex items-center justify-between">
             <div>
+              <label className="text-sm font-medium text-gray-700">응답 시간 검증</label>
+              <p className="text-xs text-gray-500">신중한 답변을 위한 최소 응답 시간 설정</p>
+            </div>
+            <Switch
+              checked={surveyData.enableTimeValidation}
+              onCheckedChange={(checked) => setSurveyData({...surveyData, enableTimeValidation: checked})}
+            />
+          </div>
+
+          {surveyData.enableTimeValidation && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                최소 응답 시간 (초)
+              </label>
+              <Input
+                type="number"
+                min="5"
+                max="60"
+                value={surveyData.minResponseTime}
+                onChange={(e) => setSurveyData({...surveyData, minResponseTime: parseInt(e.target.value) || 10})}
+                placeholder="10"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                각 질문당 최소 {surveyData.minResponseTime}초 이상 읽어야 다음으로 진행 가능
+              </p>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <div>
               <label className="text-sm font-medium text-gray-700">자동 리마인더</label>
               <p className="text-xs text-gray-500">마감일 전에 자동으로 알림을 보냅니다</p>
             </div>
@@ -300,8 +332,11 @@ const CreateSurvey = () => {
             <Input
               value={surveyData.reward}
               onChange={(e) => setSurveyData({...surveyData, reward: e.target.value})}
-              placeholder="예: 커피 기프티콘, 1000P"
+              placeholder="예: 커피 기프티콘, 1000P (선택사항)"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              보상이 없어도 괜찮습니다. 그룹 내 신뢰도가 더 중요해요!
+            </p>
           </div>
         </CardContent>
       </Card>
