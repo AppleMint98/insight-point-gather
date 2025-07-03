@@ -7,7 +7,7 @@ const BottomNavigation = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/surveys', icon: Home, label: '홈' },
+    { path: '/', icon: Home, label: '홈' },
     { path: '/library', icon: BookOpen, label: '내 보관함' },
     { path: '/profile', icon: User, label: '마이페이지' }
   ];
