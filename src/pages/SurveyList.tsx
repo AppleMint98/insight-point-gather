@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Plus, ArrowLeft, Users, Target, Clock, Home } from 'lucide-react';
+import { Bell, Plus, ArrowLeft, Users, Target, Clock, Home, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -58,6 +58,12 @@ const SurveyList = () => {
   const handleSurveyClick = (surveyId: string) => {
     const survey = surveys.find(s => s.id === surveyId);
     if (survey?.isCompleted) return; // 완료된 설문은 클릭 불가
+    // 바로 응답 페이지로 이동
+    navigate(`/survey/${surveyId}/response`);
+  };
+
+  const handleSurveyDetail = (surveyId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // 카드 클릭 이벤트 방지
     navigate(`/survey/${surveyId}`);
   };
 
@@ -79,7 +85,7 @@ const SurveyList = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">서베이 허브</h1>
-              <p className="text-xs text-gray-600">소속 그룹 내 설문 플랫폼</p>
+              <p className="text-xs text-gray-600">그룹 내 설문 플랫폼</p>
             </div>
           </button>
           <button className="p-2 hover:bg-gray-100 rounded-lg relative">
@@ -95,8 +101,8 @@ const SurveyList = () => {
       <div className="mx-4 mt-4 p-4 bg-gradient-to-r from-blue-500 to-blue-400 rounded-xl text-white">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="font-bold text-lg">소속 그룹 내 설문 서비스</h2>
-            <p className="text-sm opacity-90 mt-1">회사/학교/동호회 등 내 그룹에서만 진행되는 신뢰도 높은 설문</p>
+            <h2 className="font-bold text-lg">그룹 기반 설문 서비스</h2>
+            <p className="text-sm opacity-90 mt-1">회사/학교/동호회 등 소속 그룹에서만 진행되는 신뢰도 높은 설문</p>
           </div>
           <Users className="w-8 h-8 opacity-80" />
         </div>
@@ -157,14 +163,25 @@ const SurveyList = () => {
         
         <div className="space-y-4">
           {surveys.map((survey) => (
-            <div 
-              key={survey.id}
-              className={survey.isCompleted ? 'opacity-60' : ''}
-            >
-              <SurveyCard
-                {...survey}
+            <div key={survey.id} className="relative">
+              <div 
+                className={`${survey.isCompleted ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
                 onClick={() => handleSurveyClick(survey.id)}
-              />
+              >
+                <SurveyCard {...survey} />
+              </div>
+              
+              {/* 상세 정보 버튼 */}
+              {!survey.isCompleted && (
+                <button
+                  onClick={(e) => handleSurveyDetail(survey.id, e)}
+                  className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow border border-gray-200"
+                  title="상세 정보 보기"
+                >
+                  <Info className="w-4 h-4 text-gray-600" />
+                </button>
+              )}
+              
               {survey.isCompleted && (
                 <div className="mt-2 text-center">
                   <Badge className="bg-green-100 text-green-700">완료된 설문</Badge>
@@ -172,6 +189,22 @@ const SurveyList = () => {
               )}
             </div>
           ))}
+        </div>
+
+        {/* 설문 클릭 안내 */}
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="flex items-start space-x-3">
+            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-white text-xs font-bold">💡</span>
+            </div>
+            <div>
+              <h4 className="font-medium text-blue-900 mb-1">빠른 참여 방법</h4>
+              <p className="text-sm text-blue-700">
+                설문 카드를 클릭하면 바로 응답을 시작할 수 있습니다. 
+                상세 정보가 필요하면 <Info className="w-4 h-4 inline mx-1" /> 버튼을 클릭하세요.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
