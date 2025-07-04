@@ -60,6 +60,14 @@ const SurveyResponse = () => {
       ...prev,
       [questionId]: value
     }));
+
+    // 라디오 버튼이나 scale 타입에서는 답변 선택 시 자동으로 다음 문항으로 이동
+    const currentQ = surveyData.questions[currentQuestion];
+    if ((currentQ.type === 'radio' || currentQ.type === 'scale') && currentQuestion < surveyData.questions.length - 1) {
+      setTimeout(() => {
+        setCurrentQuestion(currentQuestion + 1);
+      }, 500); // 0.5초 후 자동 이동
+    }
   };
 
   const handleNext = () => {
@@ -94,12 +102,14 @@ const SurveyResponse = () => {
             value={responses[currentQ.id] || ''}
             onValueChange={(value) => handleResponse(currentQ.id, value)}
           >
-            {currentQ.options?.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <RadioGroupItem value={option} id={`option-${index}`} />
-                <Label htmlFor={`option-${index}`}>{option}</Label>
-              </div>
-            ))}
+            <div className="space-y-3">
+              {currentQ.options?.map((option, index) => (
+                <div key={index} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <RadioGroupItem value={option} id={`option-${index}`} />
+                  <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">{option}</Label>
+                </div>
+              ))}
+            </div>
           </RadioGroup>
         );
       
@@ -109,12 +119,14 @@ const SurveyResponse = () => {
             value={responses[currentQ.id] || ''}
             onValueChange={(value) => handleResponse(currentQ.id, value)}
           >
-            {currentQ.options?.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <RadioGroupItem value={option} id={`option-${index}`} />
-                <Label htmlFor={`option-${index}`}>{option}</Label>
-              </div>
-            ))}
+            <div className="space-y-3">
+              {currentQ.options?.map((option, index) => (
+                <div key={index} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                  <RadioGroupItem value={option} id={`option-${index}`} />
+                  <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">{option}</Label>
+                </div>
+              ))}
+            </div>
           </RadioGroup>
         );
       
@@ -122,7 +134,7 @@ const SurveyResponse = () => {
         return (
           <div className="space-y-3">
             {currentQ.options?.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
+              <div key={index} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
                 <Checkbox
                   id={`checkbox-${index}`}
                   checked={responses[currentQ.id]?.includes(option) || false}
@@ -135,7 +147,7 @@ const SurveyResponse = () => {
                     }
                   }}
                 />
-                <Label htmlFor={`checkbox-${index}`}>{option}</Label>
+                <Label htmlFor={`checkbox-${index}`} className="flex-1 cursor-pointer">{option}</Label>
               </div>
             ))}
           </div>
@@ -148,6 +160,7 @@ const SurveyResponse = () => {
             onChange={(e) => handleResponse(currentQ.id, e.target.value)}
             placeholder="자유롭게 작성해주세요..."
             rows={4}
+            className="resize-none"
           />
         );
       
@@ -163,7 +176,7 @@ const SurveyResponse = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="flex items-center px-4 py-4">
@@ -220,7 +233,7 @@ const SurveyResponse = () => {
       </div>
 
       {/* Fixed Bottom Buttons */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 max-w-md mx-auto">
         <div className="flex space-x-3">
           {currentQuestion > 0 && (
             <Button 

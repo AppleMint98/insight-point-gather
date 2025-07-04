@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Gift, TrendingUp, Users, Award, ChevronRight } from 'lucide-react';
+import { Clock, Gift, TrendingUp, Users, Award, ChevronRight, Home } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
 
 const Index = () => {
@@ -18,7 +18,8 @@ const Index = () => {
       duration: '약 8분',
       reward: '커피 기프티콘',
       daysLeft: 3,
-      participants: 1247
+      participants: 1247,
+      isCompleted: false
     },
     {
       id: '2',
@@ -27,7 +28,8 @@ const Index = () => {
       duration: '약 12분',
       reward: '치킨 기프티콘',
       daysLeft: 1,
-      participants: 856
+      participants: 856,
+      isCompleted: false
     }
   ];
 
@@ -37,17 +39,31 @@ const Index = () => {
     { id: '2', name: '치킨 기프티콘', date: '2024-06-25', status: '사용 완료' }
   ];
 
+  const handleSurveyClick = (surveyId: string, isCompleted: boolean) => {
+    if (isCompleted) return; // 완료된 설문은 클릭 불가
+    navigate(`/survey/${surveyId}/response`); // 바로 설문 응답 페이지로 이동
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
+    <div className="min-h-screen bg-gray-50 pb-20 max-w-md mx-auto">
+      {/* Header - 홈 아이콘 추가 */}
       <header className="bg-white shadow-sm">
         <div className="flex items-center justify-between px-4 py-4">
-          <div className="flex items-center space-x-3">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center space-x-3 hover:bg-gray-50 rounded-lg p-2 -ml-2 transition-colors"
+          >
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-sm font-bold text-white">SH</span>
             </div>
-            <h1 className="text-xl font-bold text-gray-900">서베이 허브</h1>
-          </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">서베이 허브</h1>
+              <div className="flex items-center space-x-1">
+                <Home className="w-3 h-3 text-gray-500" />
+                <span className="text-xs text-gray-600">홈</span>
+              </div>
+            </div>
+          </button>
           <div className="text-sm text-gray-600">
             안녕하세요, 김철수님!
           </div>
@@ -58,7 +74,7 @@ const Index = () => {
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-primary to-primary-600 rounded-xl p-6 text-white">
           <h2 className="text-2xl font-bold mb-2">오늘도 함께해주세요!</h2>
-          <p className="text-primary-100 mb-4">새로운 설문에 참여하고 다양한 기프티콘을 받아보세요</p>
+          <p className="text-primary-100 mb-4">그룹 내 설문에 참여하고 다양한 기프티콘을 받아보세요</p>
           <Button 
             onClick={() => navigate('/surveys')}
             className="bg-white text-primary hover:bg-gray-100"
@@ -107,15 +123,26 @@ const Index = () => {
           </div>
           <div className="space-y-3">
             {recommendedSurveys.map((survey) => (
-              <Card key={survey.id} className="cursor-pointer hover:shadow-md transition-shadow">
+              <Card 
+                key={survey.id} 
+                className={`${survey.isCompleted ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'} transition-shadow`}
+                onClick={() => handleSurveyClick(survey.id, survey.isCompleted)}
+              >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-3">
                     <h4 className="font-medium text-gray-900 line-clamp-2 flex-1 pr-2">
                       {survey.title}
                     </h4>
-                    <Badge variant="secondary" className="shrink-0">
-                      {survey.daysLeft}일 남음
-                    </Badge>
+                    <div className="flex flex-col space-y-1">
+                      <Badge variant="secondary" className="shrink-0">
+                        {survey.daysLeft}일 남음
+                      </Badge>
+                      {survey.isCompleted && (
+                        <Badge variant="default" className="shrink-0 bg-green-100 text-green-700">
+                          완료
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <p className="text-sm text-gray-600 mb-3">{survey.author}</p>
                   <div className="flex items-center justify-between">
