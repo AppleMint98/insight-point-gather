@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Gift, TrendingUp, Users, Award, ChevronRight, Home } from 'lucide-react';
+import { Clock, Gift, TrendingUp, Users, Award, ChevronRight, Home, Plus, BookOpen } from 'lucide-react';
 import BottomNavigation from '@/components/BottomNavigation';
 
 const Index = () => {
@@ -60,7 +60,7 @@ const Index = () => {
               <h1 className="text-xl font-bold text-gray-900">서베이 허브</h1>
               <div className="flex items-center space-x-1">
                 <Home className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-600">홈</span>
+                <span className="text-xs text-gray-600">그룹 설문 플랫폼</span>
               </div>
             </div>
           </button>
@@ -71,16 +71,61 @@ const Index = () => {
       </header>
 
       <div className="px-4 py-6 space-y-6">
-        {/* Welcome Section */}
+        {/* Welcome Section - 그룹 중심 메시징 */}
         <div className="bg-gradient-to-r from-primary to-primary-600 rounded-xl p-6 text-white">
-          <h2 className="text-2xl font-bold mb-2">오늘도 함께해주세요!</h2>
-          <p className="text-primary-100 mb-4">그룹 내 설문에 참여하고 다양한 기프티콘을 받아보세요</p>
-          <Button 
+          <h2 className="text-2xl font-bold mb-2">그룹 내 설문에 참여하세요!</h2>
+          <p className="text-primary-100 mb-4">우리 그룹만의 신뢰할 수 있는 설문 조사</p>
+          <div className="flex space-x-3">
+            <Button 
+              onClick={() => navigate('/surveys')}
+              className="bg-white text-primary hover:bg-gray-100 flex-1"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              설문 둘러보기
+            </Button>
+            <Button 
+              onClick={() => navigate('/create')}
+              className="bg-accent hover:bg-accent-600 text-white flex-1"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              설문 만들기
+            </Button>
+          </div>
+        </div>
+
+        {/* Quick Action Cards - 그룹 중심으로 재구성 */}
+        <div className="grid grid-cols-2 gap-4">
+          <Card 
+            className="border-2 border-accent-200 bg-accent-50 cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => navigate('/surveys')}
-            className="bg-white text-primary hover:bg-gray-100"
           >
-            설문 둘러보기
-          </Button>
+            <CardContent className="p-4 text-center">
+              <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mx-auto mb-3">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">그룹 설문 참여</h3>
+              <p className="text-xs text-gray-600 mb-3">우리 그룹의 설문에 참여</p>
+              <Badge className="bg-accent text-white text-xs">
+                {recommendedSurveys.filter(s => !s.isCompleted).length}개 참여 가능
+              </Badge>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="border-2 border-primary-200 bg-primary-50 cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => navigate('/create')}
+          >
+            <CardContent className="p-4 text-center">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                <Plus className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">설문 만들기</h3>
+              <p className="text-xs text-gray-600 mb-3">그룹에 설문 요청하기</p>
+              <Badge className="bg-primary text-white text-xs">
+                쉽고 빠르게
+              </Badge>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Quick Stats */}
@@ -111,7 +156,7 @@ const Index = () => {
         {/* Recommended Surveys */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">추천 설문</h3>
+            <h3 className="text-lg font-semibold text-gray-900">그룹 추천 설문</h3>
             <Button
               variant="ghost"
               size="sm"
@@ -160,46 +205,6 @@ const Index = () => {
                       <Gift className="w-4 h-4" />
                       <span className="text-sm">{survey.reward}</span>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent Rewards */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">최근 받은 보상</h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/profile/rewards')}
-              className="text-primary hover:text-primary-600"
-            >
-              전체보기 <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
-          <div className="space-y-3">
-            {recentRewards.map((reward) => (
-              <Card key={reward.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-accent-100 rounded-lg flex items-center justify-center">
-                        <Gift className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-900">{reward.name}</h4>
-                        <p className="text-sm text-gray-600">{reward.date}</p>
-                      </div>
-                    </div>
-                    <Badge 
-                      variant={reward.status === '사용 가능' ? 'default' : 'secondary'}
-                      className={reward.status === '사용 가능' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}
-                    >
-                      {reward.status}
-                    </Badge>
                   </div>
                 </CardContent>
               </Card>

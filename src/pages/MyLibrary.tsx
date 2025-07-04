@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { ArrowLeft, Clock, AlertTriangle, CheckCircle, Bell } from 'lucide-react';
+import { ArrowLeft, Clock, AlertTriangle, CheckCircle, Bell, Gift } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,7 +15,7 @@ interface SurveyItem {
   daysLeft: number;
   completedAt?: string;
   reward?: string;
-  isNew?: boolean; // 새로 도착한 설문 표시
+  isNew?: boolean;
 }
 
 const MyLibrary = () => {
@@ -28,14 +29,14 @@ const MyLibrary = () => {
       title: '3분기 직무 만족도 조사',
       type: 'required',
       daysLeft: 1,
-      isNew: true // 새로 도착한 필수 설문
+      isNew: true
     },
     {
       id: '2', 
       title: '신규 복지제도 선호도 조사',
       type: 'optional',
       daysLeft: 3,
-      isNew: true // 새로 도착한 선택 설문
+      isNew: true
     },
     {
       id: '3',
@@ -72,8 +73,8 @@ const MyLibrary = () => {
     <Card 
       className={`cursor-pointer hover:shadow-md transition-shadow ${
         survey.isNew ? 'ring-2 ring-accent-200 bg-accent-50' : ''
-      }`}
-      onClick={() => handleSurveyClick(survey.id)}
+      } ${isCompleted ? 'bg-green-50 border-green-200' : ''}`}
+      onClick={() => !isCompleted && handleSurveyClick(survey.id)}
     >
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
@@ -94,8 +95,13 @@ const MyLibrary = () => {
               >
                 {survey.type === 'required' ? '필수' : '선택'}
               </Badge>
-              {survey.type === 'required' && survey.daysLeft <= 1 && (
+              {survey.type === 'required' && survey.daysLeft <= 1 && !isCompleted && (
                 <AlertTriangle className="w-4 h-4 text-red-500" />
+              )}
+              {isCompleted && (
+                <Badge className="bg-green-100 text-green-700 text-xs">
+                  완료됨
+                </Badge>
               )}
             </div>
             
@@ -104,13 +110,16 @@ const MyLibrary = () => {
             </h3>
             
             {isCompleted ? (
-              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                <div className="flex items-center space-x-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-1 text-sm text-gray-600">
                   <CheckCircle className="w-4 h-4 text-green-500" />
                   <span>완료: {survey.completedAt}</span>
                 </div>
                 {survey.reward && (
-                  <span className="text-accent font-medium">{survey.reward}</span>
+                  <div className="flex items-center space-x-1 text-accent font-medium">
+                    <Gift className="w-4 h-4" />
+                    <span className="text-sm">{survey.reward}</span>
+                  </div>
                 )}
               </div>
             ) : (
@@ -138,11 +147,14 @@ const MyLibrary = () => {
   const newSurveyCount = ongoingSurveys.filter(s => s.isNew).length;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20 max-w-md mx-auto">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="flex items-center justify-between px-4 py-4">
           <h1 className="text-xl font-bold text-gray-900">내 보관함</h1>
+          <div className="text-sm text-gray-600">
+            참여할 설문과 완료된 설문
+          </div>
           {/* 알림 표시 */}
           {newSurveyCount > 0 && (
             <div className="flex items-center space-x-1 text-accent">
@@ -157,7 +169,7 @@ const MyLibrary = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="ongoing" className="relative">
-              진행 중
+              참여 대기 중
               {ongoingSurveys.filter(s => s.type === 'required').length > 0 && (
                 <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
               )}
@@ -167,7 +179,12 @@ const MyLibrary = () => {
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="completed">완료</TabsTrigger>
+            <TabsTrigger value="completed">
+              완료한 설문
+              <Badge className="ml-2 bg-green-100 text-green-700 text-xs px-1 py-0.5 h-5">
+                {completedSurveys.length}
+              </Badge>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="ongoing" className="space-y-4">
@@ -200,7 +217,7 @@ const MyLibrary = () => {
                   <Clock className="w-8 h-8 text-gray-400" />
                 </div>
                 <p className="text-gray-500">
-                  진행 중인 설문이 없습니다.<br />
+                  참여할 설문이 없습니다.<br />
                   <span className="text-sm text-gray-400">새로운 설문이 도착하면 자동으로 여기에 정리됩니다.</span>
                 </p>
               </div>
@@ -225,14 +242,6 @@ const MyLibrary = () => {
       </div>
 
       <BottomNavigation />
-
-      {/* Back Button - Fixed Position */}
-      <button
-        onClick={() => navigate(-1)}
-        className="fixed bottom-24 left-4 w-12 h-12 bg-white shadow-lg border border-gray-200 rounded-full flex items-center justify-center hover:shadow-xl transition-all duration-200 z-40"
-      >
-        <ArrowLeft className="w-5 h-5 text-gray-700" />
-      </button>
     </div>
   );
 };
